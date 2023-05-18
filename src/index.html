@@ -45,7 +45,7 @@
         };
 
         // Add your BOT ID below 
-        var BOT_ID = "f5388f56-0143-45c0-a738-5fe916ee16b8";
+        var BOT_ID = "9c42c5d9-acba-4c71-822b-7644b4aeef39";
         
 
         var theURL = "https://powerva.microsoft.com/api/botmanagement/v1/directline/directlinetoken?botId=" + BOT_ID;
@@ -102,7 +102,7 @@
         async function getDirectLineToken() {
             var myHeaders = new Headers();
             var data;
-            myHeaders.append("Authorization", "Bearer 6AUtLbFhY8g.XyZXzFIuFrHzQUfroW5rjDcdu_fYje0RT0dQUlmorBA");
+            myHeaders.append("Authorization", "Bearer NRnorEcyE4k.IInGyd6JG2jic4VlnNCQdpG2RJ-Vm5cwWtis-cqwOXQ");
             var requestOptions = { method: 'POST', headers: myHeaders, redirect: 'follow' };
             await fetch("https://directline.botframework.com/v3/directline/tokens/generate", requestOptions)
                 .then(response => response.json(data))
