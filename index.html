@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Insurance Coverage</title>
+    <link rel="stylesheet" href="./css/index.css" />
+    <script src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
+    <script src="https://kit.fontawesome.com/f1ac2ff5a6.js" crossorigin="anonymous"></script>
+
+
+    <style>
+        html {
+            background: url('slide2.png') no-repeat center center fixed;
+            background-size: cover;
+            height: 100%;
+            overflow: hidden;
+            font-size: 14px;
+        }
+    </style>
+
+    <script>
+        const styleOptions = {
+            // Add styleOptions to customize web chat canvas 
+            hideUploadButton: true,
+            backgroundColor: '#EBF4FA',
+            fontFamily: "'Comic Sans MS', 'Arial', sans-serif",
+            fontWeight: 'bold',
+            bubbleBackground: 'rgba(31 149 95 / 13%)',
+            bubbleFromUserBackground: 'rgba(152 192 56 / 61%)',
+            bubbleFromUserBorderColor: 'rgba(255 255 255 / 19%)',
+            bubbleBorderColor: 'rgba(255 255 255 / 19%)',
+            suggestedActionBackground: 'rgba(0 132 71 / 86%)',
+            suggestedActionBorderRadius: '6px',
+            suggestedActionBorderColor: 'rgb(255 255 255)',
+            suggestedActionBorderRadius: '6px',
+            suggestedActionTextColor: "white",
+            bubbleBorderRadius: '6px',
+            bubbleFromUserBorderRadius: '6px',
+            sendBoxButtonColor: "rgba(0 132 71 / 86%)",
+            sendBoxButtonColorOnHover: 'rgb(230 173 34)',
+            botAvatarInitials: 'BOT',
+            userAvatarInitials: 'MS',
+            botAvatarImage: 'logo1.jpg',
+            userAvatarImage: 'logo2.png',
+        };
+
+        // Add your BOT ID below 
+        var BOT_ID = "f5388f56-0143-45c0-a738-5fe916ee16b8";
+        
+
+        var theURL = "https://powerva.microsoft.com/api/botmanagement/v1/directline/directlinetoken?botId=" + BOT_ID;
+
+
+        function showBot() {
+            if (document.getElementById("chat-window").classList.contains('show')) {
+                document.getElementById("chat-icon").style.right = "0%";
+                document.getElementById("chat-window").classList.remove('show');
+                document.getElementById("chat-icon").style.display = "block";
+
+            } else {
+                document.getElementById("chat-icon").style.display = "none";
+                document.getElementById("chat-window").classList.add('show');
+            }
+        }
+
+        function refreshChat() {
+            var removeWebchat = document.getElementById("webchat");
+            removeWebchat.remove();     
+            var webchat = document.createElement("div");
+            webchat.id = "webchat";
+            document.getElementById("chat-window").appendChild(webchat);
+            renderWebChat();
+
+            
+        }
+
+        const store = window.WebChat.createStore(
+            {},
+            ({ dispatch }) => next => action => {
+                if (action.type === "DIRECT_LINE/CONNECT_FULFILLED") {
+                    dispatch({
+                        meta: {
+                            method: "keyboard",
+                        },
+                        payload: {
+                            activity: {
+                                channelData: {
+                                    postBack: true,
+                                },
+                                //Web Chat will show the 'Greeting' System Topic message which has a trigger-phrase 'hello' 
+                                name: 'startConversation',
+                                type: "event"
+                            },
+                        },
+                        type: "DIRECT_LINE/POST_ACTIVITY",
+                    });
+                }
+                return next(action);
+            }
+        );
+
+        async function getDirectLineToken() {
+            var myHeaders = new Headers();
+            var data;
+            myHeaders.append("Authorization", "Bearer 6AUtLbFhY8g.XyZXzFIuFrHzQUfroW5rjDcdu_fYje0RT0dQUlmorBA");
+            var requestOptions = { method: 'POST', headers: myHeaders, redirect: 'follow' };
+            await fetch("https://directline.botframework.com/v3/directline/tokens/generate", requestOptions)
+                .then(response => response.json(data))
+                .then(result => {
+                    data = result;
+                })
+                .catch(error => console.log('error', error));
+            return data;
+        }
+
+
+        window.onload = renderWebChat();
+        async function renderWebChat() {
+            var data = await getDirectLineToken();
+            fetch(theURL)
+                .then(response => response.json())
+                .then(conversationInfo => {
+                    window.WebChat.renderWebChat(
+                        {
+                            directLine: window.WebChat.createDirectLine({
+                                token: data.token,
+                            }),
+                            styleOptions
+                        },
+                        document.getElementById('webchat')
+                    );
+
+                })
+                .catch(err => console.error("An error occurred: " + err));
+        }
+
+
+
+    </script>
+</head>
+
+<body>
+    <button id="chat-icon" onclick="showBot()"><img src="logo.jpg" height="50px" width="50px"></button>
+    <div class="chat-window" id="chat-window">
+        <div class="chat-header">
+            Intelligent Insurance Bot
+            <div class="close-button">
+                <button class="close-chat" onclick="refreshChat()"><i class="fas fa-redo"
+                        style="font-size:18px;color:white"></i></button>
+                <button class="close-chat" onclick="showBot();refreshChat()"><i class="fa fa-close"
+                        style="font-size:18px;color:white"></i></button>
+            </div>
+        </div>
+        <div id="webchat" role="main">
+        </div>
+    </div>
+
+</body>
+
+</html>
